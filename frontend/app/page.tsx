@@ -102,7 +102,7 @@ export default function Dashboard() {
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
                   ClimaX
                 </h1>
-                <p className="text-sm text-gray-600">AI + Quantum + Blockchain Climate Resilience OS</p>
+                <p className="text-sm text-gray-600">AI + Quantum + Blockchain Climate Resilience </p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
