@@ -7,16 +7,36 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Cloud, Sun, CloudRain, Wind, Droplets, Eye, Gauge, MapPin, Thermometer } from "lucide-react"
-
 interface WeatherWidgetProps {
   backendConnected: boolean
   backendUrl: string
 }
 
+type WeatherData =
+  | {
+      success: true
+      data: {
+        city: string
+        temperature: number
+        condition: string
+        humidity: number
+        windSpeed: number
+        visibility: number
+        pressure: number
+        uvIndex: number
+        feels_like: number
+        weather_description: string
+      }
+    }
+  | {
+      success: false
+      error: string
+    }
+
 export default function WeatherWidget({ backendConnected, backendUrl }: WeatherWidgetProps) {
   const [city, setCity] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [weatherData, setWeatherData] = useState({
+  const [weatherData, setWeatherData] = useState<WeatherData>({
     success: true,
     data: {
       city: "Mumbai",
@@ -31,7 +51,6 @@ export default function WeatherWidget({ backendConnected, backendUrl }: WeatherW
       weather_description: "Partly cloudy with high humidity",
     },
   })
-
   const handleSearch = async () => {
     if (!city.trim()) return
 
@@ -82,23 +101,30 @@ export default function WeatherWidget({ backendConnected, backendUrl }: WeatherW
         })
       }
     } catch (error) {
-      console.error("Weather API error:", error)
+      if (error instanceof Error) {
+        console.error("Weather API error:", error.message);
+      } else {
+        console.error("Weather API error:", error);
+      }
+    
       setWeatherData({
         success: false,
-        error: backendConnected ? "Unable to connect to weather service" : "Demo mode - limited functionality",
-      })
+        error: backendConnected
+          ? "Unable to connect to weather service"
+          : "Demo mode - limited functionality",
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
-  const getWeatherIcon = (condition) => {
+  const getWeatherIcon = (condition:string) => {
     if (condition?.toLowerCase().includes("rain")) return <CloudRain className="h-12 w-12 text-blue-500" />
     if (condition?.toLowerCase().includes("cloud")) return <Cloud className="h-12 w-12 text-gray-500" />
     return <Sun className="h-12 w-12 text-yellow-500" />
   }
 
-  const getAQIColor = (aqi) => {
+  const getAQIColor = (aqi:number) => {
     if (aqi <= 50) return "text-green-600"
     if (aqi <= 100) return "text-yellow-600"
     if (aqi <= 150) return "text-orange-600"

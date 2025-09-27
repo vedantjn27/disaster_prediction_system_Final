@@ -75,8 +75,12 @@ export default function Dashboard() {
           setSystemStatus((prev) => ({ ...prev, backend_connected: false }))
         }
       } catch (error) {
-        console.warn("Backend not available, running in demo mode:", error.message)
-        setSystemStatus((prev) => ({ ...prev, backend_connected: false }))
+        if (error instanceof Error) {
+          console.warn("Backend not available, running in demo mode:", error.message);
+        } else {
+          console.warn("Backend not available, running in demo mode:", String(error));
+        }
+        setSystemStatus((prev) => ({ ...prev, backend_connected: false }));
       }
     }
 
